@@ -76,13 +76,17 @@ router.get('/profile',isAuth, async(req, res)=> {
 } )
 
 // get all users
-//http://localhost:3000/api/user/all
+//http://localhost:5000/api/user/all
 
-router.get('/all', async(req, res)=> {
+router.get('/all',isAuth, async(req, res)=> {
 try {
+  if (req.user.role !== "admin") {
+    return res.status(401).send({message: "Unauthorized access"})
+  }
+  const user = req.user
  const users = await User.find()
  if (!users) return res.status(404).send({message: "no users found"})
- res.status(200).send(users)
+ res.status(200).send({users, user})
 } catch (error) {
   res.status(500).send({message: error.message})
 }
